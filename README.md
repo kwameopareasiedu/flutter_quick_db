@@ -1,38 +1,120 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
 # Flutter Quick DB
+
+A dead simple Flutter database package built on top of the awesome No-SQL Sembast library, which
+offers code generation, simplifying database creation in your Flutter app.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- No-SQL database
+- Class-based annotation setup
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Flutter Quick DB uses annotations for setup, hence you need to install the `build_runner` as a dev
+dependency in your project.
+
+It is also recommended to install the `path_provider` package to provide a directory for
+Flutter Quick DB instance.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+The sample below shows a complete setup for a database with users and posts collections
+
+`database.dart`
 
 ```dart
-const like = 'sample';
+import "package:flutter_quick_db/flutter_quick_db.dart";
+
+part "database.d.dart";
+
+class User with DataStoreEntity {
+  final String _id;
+  final String name;
+  final DateTime dob;
+
+  User(this._id, this.name, this.dob);
+
+  /// Required factory constructor to create a user from the saved map
+  factory User.fromMap(Map map) {
+    return User(map["id"], map["name"], DateTime.parse(map["dob"]));
+  }
+
+  /// Override to provide the id of each instance
+  /// In this example, it returns the [_id] field
+  @override
+  String get id => _id;
+
+  /// Override to serialize the instance to a map to be saved in the db
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      "id": _id,
+      "name": name,
+      "dob": dob.toIso8601String(),
+    };
+  }
+}
+
+class Post with DataStoreEntity {
+  final String _id;
+  final String content;
+  final String userId;
+
+  Post(this._id, this.content, this.userId);
+
+  factory User.fromMap(Map map) {
+    return User(map["id"], map["name"], map["userId"]);
+  }
+
+  @override
+  String get id => _id;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      "id": _id,
+      "content": content,
+      "userId": userId,
+    };
+  }
+}
+
+@QuickDatabase(models = [User, Post], path: "primary.db")
+class AppDatabase {}
+```
+
+`main.dart`
+
+```dart
+import 'package:path_provider/path_provider.dart';
+import './database.dart';
+
+void main() async {
+  // The generated database class will be named $AppDatabase
+  final db = await $AppDatabase.createInstance(getApplicationDocumentsDirectory);
+
+  final user = User("1", "Kwame Opare Asiedu", DateTime.now());
+  await db.users.create(user.id, user);
+
+  final userKwame = await db.users.get("1");
+  final kwamePosts = await db.posts.list(
+      Finder(filter: Filter.equals("userId", userKwame.id))
+  );
+
+  runApp(/* Flutter app instance */);
+}
+```
+
+After initial setup and subsequent updates to the model files, the `build_runner` must be run to
+update the database.
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+# or
+dart run build_runner build -d
 ```
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+Flutter Quick DB is built on top of the [Sembast](https://pub.dev/packages/sembast). I highly
+recommend checking out the Sembast docs on using Sembast-related functions
