@@ -1,5 +1,5 @@
 name: flutter_quick_db
-description: "A new Flutter package project."
+description: "A dead simple Flutter database package built on top of the awesome Sembast library, which offers code generation, simplifying database creation in your Flutter app"
 version: 0.0.1
 #homepage:
 
