@@ -119,4 +119,7 @@ dart run build_runner build -d
 ## Additional information
 
 Flutter Quick DB is built on top of the [Sembast](https://pub.dev/packages/sembast). I highly
-recommend checking out the Sembast docs on using Sembast-related functions
+recommend checking out the Sembast docs on using Sembast-related functions.
+
+> Avoid naming your annotated class "Database" since this conflicts with some imports used by the
+> generated file
