@@ -4,6 +4,7 @@ import 'package:source_gen/source_gen.dart';
 
 export 'package:flutter_quick_db/codegen/annotations.dart';
 export 'package:flutter_quick_db/data_store.dart';
+export 'package:sembast/sembast_io.dart' show Database, databaseFactoryIo;
 
 Builder buildDb(BuilderOptions options) {
   return PartBuilder(

@@ -1,8 +1,10 @@
 import 'package:sembast/sembast.dart';
 
 mixin DataStoreEntity {
+  /// Returns the unique [id] of this object
   String get id;
 
+  /// Returns a [Map] representation of this object to store in the db
   Map<String, dynamic> toMap();
 }
 
