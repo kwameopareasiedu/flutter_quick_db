@@ -1,7 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:flutter_quick_db/codegen/annotations.dart';
-import 'package:flutter_quick_db/data_store.dart';
+import 'package:flutter_quick_db/flutter_quick_db.dart';
 import 'package:source_gen/source_gen.dart';
 
 class QuickDatabaseGenerator extends GeneratorForAnnotation<QuickDatabase> {

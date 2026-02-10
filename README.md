@@ -25,7 +25,9 @@ The sample below shows a complete setup for a database with users and posts coll
 ```dart
 import "package:flutter_quick_db/flutter_quick_db.dart";
 
-part "database.d.dart";
+// Don't forget to declare the generated file as part of your file
+// Generated files have the {{filename}}.db.dart extension
+part "database.db.dart";
 
 class User with DataStoreEntity {
   final String _id;
@@ -62,8 +64,8 @@ class Post with DataStoreEntity {
 
   Post(this._id, this.content, this.userId);
 
-  factory User.fromMap(Map map) {
-    return User(map["id"], map["name"], map["userId"]);
+  factory Post.fromMap(Map map) {
+    return Post(map["id"], map["name"], map["userId"]);
   }
 
   @override

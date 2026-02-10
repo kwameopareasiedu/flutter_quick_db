@@ -11,8 +11,11 @@ typedef DirectoryGetter = Future<Directory> Function();
 
 class $AppDatabase {
   final $UserDataStore users;
+  final $PostDataStore posts;
 
-  $AppDatabase._(Database db) : users = $UserDataStore(db);
+  $AppDatabase._(Database db)
+    : users = $UserDataStore(db),
+      posts = $PostDataStore(db);
 
   /// Create an instance of the database backed by a file stored in the
   /// directory returned by [getDir].
@@ -33,5 +36,14 @@ class $UserDataStore extends AbstractDataStore<User> {
   @override
   User fromMap(Map<String, dynamic> data) {
     return User.fromMap(data);
+  }
+}
+
+class $PostDataStore extends AbstractDataStore<Post> {
+  $PostDataStore(Database db) : super(db, "posts");
+
+  @override
+  Post fromMap(Map<String, dynamic> data) {
+    return Post.fromMap(data);
   }
 }

@@ -2,7 +2,7 @@ builders:
   flutter_quick_db|build_db:
     import: "package:flutter_quick_db/flutter_quick_db.dart"
     builder_factories: [ "buildDb" ]
-    build_extensions: { ".dart": [ ".g.dart" ] }
-    auto_apply: root_package
+    build_extensions: { ".dart": [ ".db.dart" ] }
+    auto_apply: dependents
     build_to: source
     applies_builders: [ ]

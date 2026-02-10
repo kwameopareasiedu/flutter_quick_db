@@ -1,4 +1,4 @@
-import 'package:sembast/sembast.dart';
+part of "flutter_quick_db.dart";
 
 mixin DataStoreEntity {
   /// Returns the unique [id] of this object

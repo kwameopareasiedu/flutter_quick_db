@@ -1,3 +1,5 @@
+part of "flutter_quick_db.dart";
+
 class QuickDatabase {
   final String? name;
   final String path;
