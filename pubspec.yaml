@@ -1,7 +1,8 @@
 name: flutter_quick_db
 description: "A dead simple Flutter database package built on top of the awesome Sembast library, which offers code generation, simplifying database creation in your Flutter app"
 version: 0.0.1
-#homepage:
+homepage: https://github.com/kwameopareasiedu/flutter_quick_db?tab=readme-ov-file
+repository: https://github.com/kwameopareasiedu/flutter_quick_db
 
 environment:
   sdk: ^3.10.1
@@ -21,11 +22,11 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+  # For information on the generic Dart part of this file, see the
+  # following page: https://dart.dev/tools/pub/pubspec
 
-# The following section is specific to Flutter packages.
-#flutter:
+  # The following section is specific to Flutter packages.
+  #flutter:
 
   # To add assets to your package, add an assets section, like this:
   # assets:
