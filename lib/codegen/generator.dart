@@ -69,15 +69,22 @@ class QuickDatabaseGenerator extends GeneratorForAnnotation<QuickDatabase> {
     final output = <String>[];
 
     output.add("""
+typedef DirectoryGetter = Future<Directory> Function();
+
 class $dbClassName {
   ${_generateModelFieldDeclarations(models)}
 
   $dbClassName._(Database db):
     ${_generateModelConstructorAssignments(models)};
 
-  static Future<$dbClassName> getInstance() async {
-    final docsDir = await getApplicationDocumentsDirectory();
-    final dbPath = p.join(docsDir.path, "$dbFilePath");
+  /// Create an instance of the database backed by a file stored in the 
+  /// directory returned by [getDir].
+  ///
+  /// This can be the [getApplicationDocumentsDirectory] function from the 
+  /// [path_provider] package
+  static Future<$dbClassName> createInstance(DirectoryGetter getDir) async {
+    final docsDir = await getDir();
+    final dbPath = join(docsDir.path, "$dbFilePath");
     final sembastDb = await databaseFactoryIo.openDatabase(dbPath);
     return $dbClassName._(sembastDb);
   }
@@ -94,12 +101,12 @@ String _generateModelFieldDeclarations(List<_ModelData> models) {
   return models.map((model) => "${model.fieldDeclaration};").join("\n");
 }
 
-String _generateModelStoreClassDeclarations(List<_ModelData> models) {
-  return models.map((model) => model.dataStoreClassDeclaration).join(",");
-}
-
 String _generateModelConstructorAssignments(List<_ModelData> models) {
   return models.map((model) => model.constructorAssignment).join(",\n");
+}
+
+String _generateModelStoreClassDeclarations(List<_ModelData> models) {
+  return models.map((model) => model.dataStoreClassDeclaration).join("\n\n");
 }
 
 class _ModelData {
