@@ -1,3 +1,4 @@
-## 0.0.1
+## 0.1.0
 
-* TODO: Describe initial release.
+- Implemented code generator for `@QuickDatabase` annotation
+- Included `example` app for reference
