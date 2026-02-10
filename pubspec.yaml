@@ -1,7 +1,7 @@
 name: flutter_quick_db
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
+#homepage:
 
 environment:
   sdk: ^3.10.1
@@ -10,6 +10,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  build: ^4.0.4
+  source_gen: ^4.2.0
+  analyzer: ^10.0.1
+  sembast: ^3.8.6
 
 dev_dependencies:
   flutter_test:
@@ -20,7 +24,7 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-flutter:
+#flutter:
 
   # To add assets to your package, add an assets section, like this:
   # assets:
