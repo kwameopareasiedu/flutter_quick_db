@@ -20,16 +20,16 @@ abstract class AbstractDataStore<T extends DataStoreEntity> {
 
   T fromMap(Map<String, dynamic> data);
 
-  /// Insert a new entry into the store with the specified [id] and [data]
-  Future<bool> create(String id, T data) async {
-    await _store.record(id).put(_db, data.toMap(), merge: true);
+  /// Insert a new entry into the store with the specified and [data]
+  Future<bool> create(T data) async {
+    await _store.record(data.id).put(_db, data.toMap(), merge: true);
     return true;
   }
 
   /// Insert multiple entries into the store
   Future<bool> createMany(List<T> data) async {
     for (final item in data) {
-      await create(item.id, item);
+      await create(item);
     }
 
     return true;
@@ -53,6 +53,12 @@ abstract class AbstractDataStore<T extends DataStoreEntity> {
   /// [finder] is provided
   Future<int> count([Filter? filter]) {
     return _store.count(_db, filter: filter);
+  }
+
+  /// Updates an entry in the store with the specified [id] and [data]
+  Future<bool> update(T data) async {
+    await _store.record(data.id).put(_db, data.toMap(), merge: true);
+    return true;
   }
 
   /// Removes an entry matching the provided [id]

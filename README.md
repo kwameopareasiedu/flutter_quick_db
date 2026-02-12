@@ -55,6 +55,18 @@ class User with DataStoreEntity {
       "dob": dob.toIso8601String(),
     };
   }
+
+  User copyWith({
+    String? _id,
+    String? name,
+    DateTime? dob,
+  }) {
+    return User(
+      _id ?? this._id,
+      name ?? this.name,
+      dob ?? this.dob,
+    );
+  }
 }
 
 class Post with DataStoreEntity {
@@ -96,12 +108,13 @@ void main() async {
   final db = await $AppDatabase.createInstance(getApplicationDocumentsDirectory);
 
   final user = User("1", "Kwame Opare Asiedu", DateTime.now());
-  await db.users.create(user.id, user);
+  await db.users.create(user);
 
   final userKwame = await db.users.get("1");
   final kwamePosts = await db.posts.list(
       Finder(filter: Filter.equals("userId", userKwame.id))
   );
+  await db.users.update(user.copyWith(name: "Kwame Asiedu"));
 
   runApp(/* Flutter app instance */);
 }
