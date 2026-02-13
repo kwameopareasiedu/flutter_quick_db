@@ -4,5 +4,5 @@ import 'package:flutter_quick_db_example/models/user.dart';
 
 part "app_db.db.dart";
 
-@QuickDatabase(models: [User, Post])
+@QuickDatabase(models: {"users": User, "dependents": User, "posts": Post})
 class AppDatabase {}

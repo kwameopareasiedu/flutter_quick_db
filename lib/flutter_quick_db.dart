@@ -3,9 +3,8 @@ import 'package:flutter_quick_db/generator.dart';
 import 'package:sembast/sembast.dart';
 import 'package:source_gen/source_gen.dart';
 
-export 'dart:io' show Directory;
+export 'dart:io' show File;
 
-export 'package:path/path.dart' show join;
 export 'package:sembast/sembast_io.dart'
     show Boundary, Database, databaseFactoryIo, Finder, Filter, SortOrder;
 

@@ -6,7 +6,8 @@ offers code generation, simplifying database creation in your Flutter app.
 ## Features
 
 - No-SQL database
-- Class-based annotation setup
+- Simple database setup
+- Auto-generated database class implementation via annotations
 
 ## Getting started
 
@@ -93,19 +94,35 @@ class Post with DataStoreEntity {
   }
 }
 
-@QuickDatabase(models = [User, Post], path: "primary.db")
+@QuickDatabase(
+  /// [models] is a map of table/store names to class types
+  /// This allows you to setup multiple tables/stores with the same type
+  models = {
+    "users": User,
+    "deletedUsers": User,
+    "posts": Post
+  }
+)
 class AppDatabase {}
 ```
 
 `main.dart`
 
 ```dart
+import 'dart:io';
+
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import './database.dart';
 
 void main() async {
   // The generated database class will be named $AppDatabase
-  final db = await $AppDatabase.createInstance(getApplicationDocumentsDirectory);
+  final db = await $AppDatabase.createInstance(
+    () => getApplicationDocumentsDirectory().then((dir) {
+      // Create database in <DOCS_DIR>/main.db
+      return File(join(dir.path, "main.db"));
+    })
+  );
 
   final user = User("1", "Kwame Opare Asiedu", DateTime.now());
   await db.users.create(user);

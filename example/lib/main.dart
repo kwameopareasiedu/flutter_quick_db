@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_quick_db_example/app_db.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 void main() async {
   final db = await $AppDatabase.createInstance(
-    getApplicationDocumentsDirectory,
+    () => getApplicationDocumentsDirectory().then((dir) {
+      return File(join(dir.path, "main.db"));
+    }),
   );
 
   // From here, you can use [appDatabase] however you wish

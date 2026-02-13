@@ -7,31 +7,29 @@ part of 'app_db.dart';
 // QuickDatabaseGenerator
 // **************************************************************************
 
-typedef DirectoryGetter = Future<Directory> Function();
+typedef LocationGetter = Future<File> Function();
 
 class $AppDatabase {
-  final $UserDataStore users;
-  final $PostDataStore posts;
+  final $UsersDataStore users;
+  final $DependentsDataStore dependents;
+  final $PostsDataStore posts;
 
   $AppDatabase._(Database db)
-    : users = $UserDataStore(db),
-      posts = $PostDataStore(db);
+    : users = $UsersDataStore(db),
+      dependents = $DependentsDataStore(db),
+      posts = $PostsDataStore(db);
 
   /// Create an instance of the database backed by a file stored in the
-  /// directory returned by [getDir].
-  ///
-  /// This can be the [getApplicationDocumentsDirectory] function from the
-  /// [path_provider] package
-  static Future<$AppDatabase> createInstance(DirectoryGetter getDir) async {
-    final docsDir = await getDir();
-    final dbPath = join(docsDir.path, "main.db");
+  /// file returned by [getLocation]
+  static Future<$AppDatabase> createInstance(LocationGetter getLocation) async {
+    final dbPath = await getLocation().then((file) => file.path);
     final sembastDb = await databaseFactoryIo.openDatabase(dbPath);
     return $AppDatabase._(sembastDb);
   }
 }
 
-class $UserDataStore extends AbstractDataStore<User> {
-  $UserDataStore(Database db) : super(db, "users");
+class $UsersDataStore extends AbstractDataStore<User> {
+  $UsersDataStore(Database db) : super(db, "users");
 
   @override
   User fromMap(Map<String, dynamic> data) {
@@ -39,8 +37,17 @@ class $UserDataStore extends AbstractDataStore<User> {
   }
 }
 
-class $PostDataStore extends AbstractDataStore<Post> {
-  $PostDataStore(Database db) : super(db, "posts");
+class $DependentsDataStore extends AbstractDataStore<User> {
+  $DependentsDataStore(Database db) : super(db, "dependents");
+
+  @override
+  User fromMap(Map<String, dynamic> data) {
+    return User.fromMap(data);
+  }
+}
+
+class $PostsDataStore extends AbstractDataStore<Post> {
+  $PostsDataStore(Database db) : super(db, "posts");
 
   @override
   Post fromMap(Map<String, dynamic> data) {

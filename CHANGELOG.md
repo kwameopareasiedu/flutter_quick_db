@@ -1,3 +1,8 @@
+## 0.3.0
+
+- Removed `name` and `path` fields from `@QuickDatabase` annotation
+- Changed `model` field of `@QuickDatabase` from a list to a map of store names to types
+
 ## 0.2.0
 
 - Added `update` function to `AbstractDataStore` class

@@ -1,6 +1,6 @@
 name: flutter_quick_db
 description: "A dead simple Flutter database package built on top of the awesome Sembast library, which offers code generation, simplifying database creation in your Flutter app"
-version: 0.2.0
+version: 0.3.0
 homepage: https://github.com/kwameopareasiedu/flutter_quick_db?tab=readme-ov-file
 repository: https://github.com/kwameopareasiedu/flutter_quick_db
 
@@ -15,7 +15,6 @@ dependencies:
   source_gen: ^4.2.0
   analyzer: ^9.0.0
   sembast: ^3.8.6
-  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:

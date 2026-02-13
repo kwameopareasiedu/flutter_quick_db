@@ -14,19 +14,10 @@ class QuickDatabaseGenerator extends GeneratorForAnnotation<QuickDatabase> {
       throw "@QuickDatabase targets must be a class (${element.name})";
     }
 
-    final dbClassName = !annotation.read("name").isNull
-        ? annotation.read("name").stringValue
-        : "\$${element.name}";
+    final dbClassName = "\$${element.name}";
+    final dbModelMap = annotation.read("models").mapValue.entries;
 
-    final dbFilePath = annotation.read("path").stringValue;
-
-    final dbModelClassElements = annotation
-        .read("models")
-        .listValue
-        .map((dartObj) => dartObj.toTypeValue()!.element!)
-        .toList(growable: false);
-
-    if (dbModelClassElements.isEmpty) {
+    if (dbModelMap.isEmpty) {
       throw "${element.name}, annotated with @QuickDatabase, must specify at least one model type";
     }
 
@@ -34,7 +25,10 @@ class QuickDatabaseGenerator extends GeneratorForAnnotation<QuickDatabase> {
     final mapTypeChecker = TypeChecker.typeNamed(Map);
     final models = <_ModelData>[];
 
-    for (final modelElement in dbModelClassElements) {
+    for (final entry in dbModelMap) {
+      final modelTableName = entry.key!.toStringValue()!;
+      final modelElement = entry.value!.toTypeValue()!.element!;
+
       // Ensure model is a class type
       if (modelElement is! ClassElement) {
         throw "${modelElement.name} is not a class";
@@ -62,13 +56,13 @@ class QuickDatabaseGenerator extends GeneratorForAnnotation<QuickDatabase> {
         throw "${modelElement.name} must have a 'fromMap' factory constructor which accepts a single Map object";
       }
 
-      models.add(_ModelData(modelElement.name!));
+      models.add(_ModelData(modelElement.name!, modelTableName));
     }
 
     final output = <String>[];
 
     output.add("""
-typedef DirectoryGetter = Future<Directory> Function();
+typedef LocationGetter = Future<File> Function();
 
 class $dbClassName {
   ${_generateModelFieldDeclarations(models)}
@@ -77,13 +71,9 @@ class $dbClassName {
     ${_generateModelConstructorAssignments(models)};
 
   /// Create an instance of the database backed by a file stored in the 
-  /// directory returned by [getDir].
-  ///
-  /// This can be the [getApplicationDocumentsDirectory] function from the 
-  /// [path_provider] package
-  static Future<$dbClassName> createInstance(DirectoryGetter getDir) async {
-    final docsDir = await getDir();
-    final dbPath = join(docsDir.path, "$dbFilePath");
+  /// file returned by [getLocation]
+  static Future<$dbClassName> createInstance(LocationGetter getLocation) async {
+    final dbPath = await getLocation().then((file) => file.path);
     final sembastDb = await databaseFactoryIo.openDatabase(dbPath);
     return $dbClassName._(sembastDb);
   }
@@ -110,12 +100,12 @@ String _generateModelStoreClassDeclarations(List<_ModelData> models) {
 
 class _ModelData {
   final String className;
+  final String tableName;
 
-  _ModelData(this.className);
+  _ModelData(this.className, this.tableName);
 
-  String get tableName => "${className.toLowerCase()}s";
-
-  String get storeClassName => "\$${className}DataStore";
+  String get storeClassName =>
+      "\$${tableName[0].toUpperCase()}${tableName.substring(1)}DataStore";
 
   String get fieldDeclaration => "\tfinal $storeClassName $tableName";
 

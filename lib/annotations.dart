@@ -1,9 +1,7 @@
 part of "flutter_quick_db.dart";
 
 class QuickDatabase {
-  final String? name;
-  final String path;
-  final List<Type> models;
+  final Map<String, Type> models;
 
-  const QuickDatabase({this.name, this.path = "main.db", required this.models});
+  const QuickDatabase({required this.models});
 }
