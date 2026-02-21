@@ -126,8 +126,8 @@ void main() async {
 }
 ```
 
-After initial setup and subsequent updates to the model files, the `build_runner` must be run to
-update the database.
+Don't forget to invoke `build_runner` to update the database when models are added/removed from your
+database.
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
