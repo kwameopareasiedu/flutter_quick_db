@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_quick_db_example/app_db.dart';
+import 'package:flutter_quick_db_example/database.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -14,11 +14,13 @@ void main() async {
 
   // From here, you can use [appDatabase] however you wish
 
-  runApp(const MainApp());
+  runApp(MainApp(db: db));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final $AppDatabase db;
+
+  const MainApp({super.key, required this.db});
 
   @override
   Widget build(BuildContext context) {
