@@ -8,8 +8,6 @@ export "dart:io" show File;
 export "package:sembast/sembast_io.dart"
     show Boundary, databaseFactoryIo, Finder, Filter, SortOrder;
 
-export "package:sembast/sembast_io.dart" show Database;
-
 part "annotations.dart";
 part "datastore.dart";
 
