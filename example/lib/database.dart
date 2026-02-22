@@ -1,8 +1,7 @@
 import 'package:flutter_quick_db/flutter_quick_db.dart';
-import 'package:flutter_quick_db_example/models/post.dart';
-import 'package:flutter_quick_db_example/models/user.dart';
+import 'package:flutter_quick_db_example/models.dart';
 
-part "app_db.db.dart";
+part "database.db.dart";
 
 @QuickDatabase(models: {"users": User, "dependents": User, "posts": Post})
 class AppDatabase {}

@@ -7,15 +7,15 @@ offers code generation, simplifying database creation in your Flutter app.
 
 - No-SQL database
 - Simple database setup
-- Auto-generated database class implementation via annotations
+- Auto-generated database class and stores implementation via annotations
 
 ## Getting started
 
 Flutter Quick DB uses annotations for setup, hence you need to install the `build_runner` as a dev
 dependency in your project.
 
-It is also recommended to install the `path_provider` package to provide a directory for
-Flutter Quick DB instance.
+> It is also recommended to install the `path_provider` package to provide a directory for
+> Flutter Quick DB instance.
 
 ## Usage
 
@@ -26,68 +26,57 @@ The sample below shows a complete setup for a database with users and posts coll
 ```dart
 import "package:flutter_quick_db/flutter_quick_db.dart";
 
-// Don't forget to declare the generated file as part of your file
+// IMPORTANT! Declare the generated file as part of your file
 // Generated files have the {{filename}}.db.dart extension
 part "database.db.dart";
 
-class User with DataStoreEntity {
-  final String _id;
+
+/// [User] extends from [StringStoreModel] because its [id] is a string
+class User with StringStoreModel {
+  /// Required override to provide the id of each instance
+  /// In this example, it is the same as the [id] field
+  @override
+  final String id;
+
   final String name;
   final DateTime dob;
 
-  User(this._id, this.name, this.dob);
+  User(this.id, this.name, this.dob);
 
   /// Required factory constructor to create a user from the saved map
   factory User.fromMap(Map map) {
     return User(map["id"], map["name"], DateTime.parse(map["dob"]));
   }
 
-  /// Override to provide the id of each instance
-  /// In this example, it returns the [_id] field
-  @override
-  String get id => _id;
-
-  /// Override to serialize the instance to a map to be saved in the db
+  /// Required override to serialize the instance to a map to be saved in the db
   @override
   Map<String, dynamic> toMap() {
-    return {
-      "id": _id,
-      "name": name,
-      "dob": dob.toIso8601String(),
-    };
+    return {"id": id, "name": name, "dob": dob.toIso8601String()};
   }
 
-  User copyWith({
-    String? _id,
-    String? name,
-    DateTime? dob,
-  }) {
-    return User(
-      _id ?? this._id,
-      name ?? this.name,
-      dob ?? this.dob,
-    );
+  User copyWith({ String? id, String? name, DateTime? dob }) {
+    return User(id ?? this.id, name ?? this.name, dob ?? this.dob);
   }
 }
 
-class Post with DataStoreEntity {
-  final String _id;
+/// [Post] extends from [IntStoreModel] because its [id] is a int
+class Post with IntStoreModel {
+  @override
+  final int id;
+
   final String content;
   final String userId;
 
-  Post(this._id, this.content, this.userId);
+  Post(this.id, this.content, this.userId);
 
   factory Post.fromMap(Map map) {
     return Post(map["id"], map["name"], map["userId"]);
   }
 
   @override
-  String get id => _id;
-
-  @override
   Map<String, dynamic> toMap() {
     return {
-      "id": _id,
+      "id": id,
       "content": content,
       "userId": userId,
     };
@@ -137,19 +126,11 @@ void main() async {
 }
 ```
 
-After initial setup and subsequent updates to the model files, the `build_runner` must be run to
-update the database.
+Don't forget to invoke `build_runner` to update the database when models are added/removed from your
+database.
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 # or
 dart run build_runner build -d
 ```
-
-## Additional information
-
-Flutter Quick DB is built on top of the [Sembast](https://pub.dev/packages/sembast). I highly
-recommend checking out the Sembast docs on using Sembast-related functions.
-
-> Avoid naming your annotated class "Database" since this conflicts with some imports used by the
-> generated file

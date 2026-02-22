@@ -21,7 +21,10 @@ class QuickDatabaseGenerator extends GeneratorForAnnotation<QuickDatabase> {
       throw "${element.name}, annotated with @QuickDatabase, must specify at least one model type";
     }
 
-    final dataStoreEntityMixinChecker = TypeChecker.typeNamed(DataStoreEntity);
+    final intStoreModelMixinChecker = TypeChecker.typeNamed(IntStoreModel);
+    final stringStoreModelMixinChecker = TypeChecker.typeNamed(
+      StringStoreModel,
+    );
     final mapTypeChecker = TypeChecker.typeNamed(Map);
     final models = <_ModelData>[];
 
@@ -34,13 +37,19 @@ class QuickDatabaseGenerator extends GeneratorForAnnotation<QuickDatabase> {
         throw "${modelElement.name} is not a class";
       }
 
-      // Ensure model implements the [DataStoreEntity] mixin
-      final implementsDataStoreEntity = modelElement.mixins.any((mixinType) {
-        return dataStoreEntityMixinChecker.isAssignableFrom(mixinType.element);
+      // Ensure model implements the [StoreModel] mixin
+      final implementsIntStoreModel = modelElement.mixins.any((mixinType) {
+        return intStoreModelMixinChecker.isAssignableFrom(mixinType.element);
       });
 
-      if (!implementsDataStoreEntity) {
-        throw "${modelElement.name} must implement DataStoreEntity mixin";
+      final implementsStringStoreModel = modelElement.mixins.any((mixinType) {
+        return stringStoreModelMixinChecker.isAssignableFrom(mixinType.element);
+      });
+
+      if (!implementsIntStoreModel && !implementsStringStoreModel) {
+        throw "${modelElement.name} must mixin IntStoreModel or StringStoreModel";
+      } else if (implementsIntStoreModel && implementsStringStoreModel) {
+        throw "${modelElement.name} must mixin only one of IntStoreModel or StringStoreModel";
       }
 
       // Ensure model has a factory [fromMap] method which accepts a Map object
@@ -56,7 +65,13 @@ class QuickDatabaseGenerator extends GeneratorForAnnotation<QuickDatabase> {
         throw "${modelElement.name} must have a 'fromMap' factory constructor which accepts a single Map object";
       }
 
-      models.add(_ModelData(modelElement.name!, modelTableName));
+      models.add(
+        _ModelData(
+          modelElement.name!,
+          modelTableName,
+          implementsIntStoreModel ? _IdType.int : _IdType.string,
+        ),
+      );
     }
 
     final output = <String>[];
@@ -67,7 +82,7 @@ typedef LocationGetter = Future<File> Function();
 class $dbClassName {
   ${_generateModelFieldDeclarations(models)}
 
-  $dbClassName._(Database db):
+  $dbClassName._(\$DatabaseWrapper wrapper):
     ${_generateModelConstructorAssignments(models)};
 
   /// Create an instance of the database backed by a file stored in the 
@@ -75,7 +90,7 @@ class $dbClassName {
   static Future<$dbClassName> createInstance(LocationGetter getLocation) async {
     final dbPath = await getLocation().then((file) => file.path);
     final sembastDb = await databaseFactoryIo.openDatabase(dbPath);
-    return $dbClassName._(sembastDb);
+    return $dbClassName._(\$DatabaseWrapper(sembastDb));
   }
 }
 
@@ -95,26 +110,35 @@ String _generateModelConstructorAssignments(List<_ModelData> models) {
 }
 
 String _generateModelStoreClassDeclarations(List<_ModelData> models) {
-  return models.map((model) => model.dataStoreClassDeclaration).join("\n\n");
+  return models.map((model) => model.storeClassDeclaration).join("\n\n");
 }
+
+enum _IdType { int, string }
 
 class _ModelData {
   final String className;
-  final String tableName;
+  final String storeName;
+  final _IdType type;
 
-  _ModelData(this.className, this.tableName);
+  _ModelData(this.className, this.storeName, this.type);
 
   String get storeClassName =>
-      "\$${tableName[0].toUpperCase()}${tableName.substring(1)}DataStore";
+      "\$${storeName[0].toUpperCase()}${storeName.substring(1)}Store";
 
-  String get fieldDeclaration => "\tfinal $storeClassName $tableName";
+  String get storeClassType => switch (type) {
+    _IdType.int => "IntStore",
+    _IdType.string => "StringStore",
+  };
 
-  String get constructorAssignment => "\t\t$tableName = $storeClassName(db)";
+  String get fieldDeclaration => "\tfinal $storeClassName $storeName";
 
-  String get dataStoreClassDeclaration =>
-      """
-class $storeClassName extends AbstractDataStore<$className> {
-  $storeClassName(Database db) : super(db, "$tableName");
+  String get constructorAssignment =>
+      "\t\t$storeName = $storeClassName(wrapper)";
+
+  String get storeClassDeclaration {
+    return """
+class $storeClassName extends $storeClassType<$className> {
+  $storeClassName(\$DatabaseWrapper wrapper) : super(wrapper.db, "$storeName");
 
   @override
   $className fromMap(Map<String, dynamic> data) {
@@ -122,4 +146,5 @@ class $storeClassName extends AbstractDataStore<$className> {
   }
 }
   """;
+  }
 }

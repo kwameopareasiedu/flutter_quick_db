@@ -1,3 +1,9 @@
+## 0.4.0
+
+- Replaced `DataStoreEntity` mixin with `StringDataStore` and `IntDataStore` mixins
+- Merged `create(T data)` and `update(T data)` methods into `upsert(T data)` in `DataStore` class
+- Replaced `createMany(List<T> data)` method with `upsertMany(List<T> data)` in `DataStore` class
+
 ## 0.3.0
 
 - Removed `name` and `path` fields from `@QuickDatabase` annotation
